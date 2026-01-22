@@ -9,6 +9,13 @@
 
   --font-pretendard: var(--font-pretendard);
 }
+/*
+사용시 이름뒤에 바로 붙여서 사용 하면됨
+  배경색: bg-main, bg-main-light, bg-point
+  글자색: text-main-dark, text-purple-light
+  테두리: border-main, border-point
+  폰트: font-pretendard
+*/
 
 body {
   font-family: var(--font-pretendard), sans-serif;

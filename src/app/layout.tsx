@@ -1,7 +1,7 @@
-import Footer from "../components/layout/Footer";
-import Navbar from "../components/layout/Navbar";
+import Navbar from "@/components/layout/Navbar";
 import "./globals.css";
 import localFont from "next/font/local";
+import Footer from "@/components/layout/Footer";
 
 const pretendard = localFont({
   src: "../../public/fonts/PretendardVariable.woff2",
