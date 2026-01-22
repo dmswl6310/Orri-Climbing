@@ -1,26 +1,18 @@
 @import "tailwindcss";
 
 @theme {
-  /* 1. 브랜드 컬러 등록 */
-  --color-main: #3b82f6; /* 기존 오르리 메인 블루 */
-  --color-main-light: #eff6ff; /* 배경용 연한 블루 */
-  --color-point: #f43f5e; /* 좋아요/포인트 컬러 (예: 로즈) */
+  --color-main: #aec6f7;
+  --color-main-light: #f0f4ff;
+  --color-main-dark: #3a5e9a;
+  --color-point: #ffd166;
+  --color-purple-light: #d3b3e1;
 
-  /* 2. 폰트 설정 (아래 layout.tsx에서 정의할 변수와 매칭) */
   --font-pretendard: var(--font-pretendard);
-}
-
-/* 기초 스타일 설정 */
-:root {
-  --background: #ffffff;
-  --foreground: #111827;
 }
 
 body {
   font-family: var(--font-pretendard), sans-serif;
-  color: var(--foreground);
-  background: var(--background);
-  /* 텍스트를 더 부드럽게 보여주는 설정 */
-  -webkit-font-smoothing: antialiased;
-  -moz-osx-font-smoothing: grayscale;
+  background-color: #ffffff;
+  /* 전체적으로 선명하고 얇은 느낌을 위해 폰트 두께 미세 조정 */
+  letter-spacing: -0.02em;
 }
