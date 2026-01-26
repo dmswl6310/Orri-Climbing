@@ -1,7 +1,21 @@
 import Link from "next/link";
-import GymCard from "./GymCard";
+import GymCard, { Gym } from "./GymCard";
+import { JSX } from "react/jsx-runtime";
+async function getPopularGyms() {
+  const res = await fetch(
+    `${process.env.NEXT_PUBLIC_BASE_URL}/api/gyms/popular`,
+    {
+      next: { revalidate: 3600 },
+    },
+  );
 
-const PopularGyms = () => {
+  if (!res.ok) return [];
+  return res.json();
+}
+
+const PopularGyms = async () => {
+  const gyms = await getPopularGyms();
+
   return (
     <section className="p-8 md:p-16 max-w-7xl mx-auto">
       <div className="flex justify-between items-end mb-10">
@@ -22,8 +36,8 @@ const PopularGyms = () => {
       </div>
 
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
-        {[1, 2, 3].map((item) => (
-          <GymCard key={item} id={0} />
+        {gyms.map((gym: JSX.IntrinsicAttributes & Gym) => (
+          <GymCard key={gym.id} {...gym} />
         ))}
       </div>
     </section>

@@ -1,7 +1,25 @@
 import Link from "next/link";
 import EyeIcon from "../icons/EyeIcon";
 
-const GymCard = ({ id }: { id: number }) => (
+export interface Gym {
+  id: string;
+  name: string;
+  district: string;
+  scrapCount: number;
+  viewCount: number; // 인기 지표로 사용
+  imageUrl: string;
+  tags: string[];
+}
+export type GymCardProps = Gym;
+
+const GymCard = ({
+  id,
+  name,
+  district,
+  scrapCount,
+  imageUrl,
+  tags,
+}: GymCardProps) => (
   <Link href={`/gyms/${id}`} className="block">
     <div className="group relative bg-white rounded-2xl overflow-hidden border border-gray-100 hover:border-main-light transition-all flex flex-col hover:shadow-xl hover:shadow-main/5">
       <div className="relative aspect-[16/8] overflow-hidden bg-gray-50">
@@ -10,7 +28,7 @@ const GymCard = ({ id }: { id: number }) => (
 
       <div className="p-4 flex flex-col gap-2">
         <div className="flex justify-between items-center">
-          <h4 className="font-bold text-base text-gray-800">더클라임 강남점</h4>
+          <h4 className="font-bold text-base text-gray-800">{name}</h4>
 
           <div className="flex items-center gap-1 text-gray-400">
             <EyeIcon className="w-3.5 h-3.5" />
@@ -26,7 +44,7 @@ const GymCard = ({ id }: { id: number }) => (
         </div>
 
         <p className="text-gray-400 text-[11px] leading-snug line-clamp-1 border-t border-gray-50 pt-2 mt-1">
-          이번 주에만 300명이 넘게 확인했어요!
+          이번 주에만 {scrapCount}명이 넘게 확인했어요!
         </p>
       </div>
     </div>
