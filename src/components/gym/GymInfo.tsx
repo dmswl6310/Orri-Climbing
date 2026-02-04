@@ -1,32 +1,58 @@
-// components/gym/GymInfo.tsx
+import { OperatingHour } from "@/types/gyms/types";
 
-const GymInfo = () => {
+interface GymInfoProps {
+  description: string;
+  hours: OperatingHour[];
+  facilities: string[];
+}
+
+const GymInfo = ({ description, hours, facilities }: GymInfoProps) => {
   return (
     <div className="lg:col-span-2 space-y-12">
       {/* 1. 암장 소개 */}
       <section>
         <h3 className="text-2xl font-bold text-gray-900 mb-4">암장 소개</h3>
         <p className="text-gray-600 leading-relaxed text-base md:text-lg">
-          국내 최대 규모의 볼더링 시설을 자랑하는 더클라임 강남점입니다. 매주
-          새로운 문제가 세팅되며, 초보자부터 상급자까지 즐길 수 있는 다양한
-          각도의 벽이 준비되어 있습니다. 쾌적한 환경에서 클라이밍을 즐겨보세요!
+          {description}
         </p>
       </section>
 
-      {/* 2. 이용 시간 */}
+      {/* 2. 이용 시간 - 데이터 기반 렌더링 */}
       <section>
         <h3 className="text-2xl font-bold text-gray-900 mb-6 flex items-center gap-2">
           ⏰ 이용 시간
         </h3>
         <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-          <div className="bg-gray-50 rounded-2xl p-5 flex justify-between items-center border border-gray-100">
-            <span className="font-bold text-gray-700">평일</span>
-            <span className="text-main-dark font-black">10:00 - 23:00</span>
-          </div>
-          <div className="bg-gray-50 rounded-2xl p-5 flex justify-between items-center border border-gray-100">
-            <span className="font-bold text-gray-700">주말 / 공휴일</span>
-            <span className="text-main-dark font-black">10:00 - 20:00</span>
-          </div>
+          {hours.map((item) => (
+            <div
+              key={item.day}
+              className="bg-gray-50 rounded-2xl p-5 flex justify-between items-center border border-gray-100"
+            >
+              <span className="font-bold text-gray-700">{item.day}</span>
+              <span
+                className={`font-black ${item.isClosed ? "text-red-400" : "text-main-dark"}`}
+              >
+                {item.isClosed ? "휴무" : item.time}
+              </span>
+            </div>
+          ))}
+        </div>
+      </section>
+
+      {/* 3. 편의 시설 (추가 제안) */}
+      <section>
+        <h3 className="text-2xl font-bold text-gray-900 mb-6 flex items-center gap-2">
+          🏢 편의 시설
+        </h3>
+        <div className="flex flex-wrap gap-2">
+          {facilities.map((f) => (
+            <span
+              key={f}
+              className="px-4 py-2 bg-white border border-gray-100 rounded-xl text-sm font-bold text-gray-600 shadow-sm"
+            >
+              {f}
+            </span>
+          ))}
         </div>
       </section>
 

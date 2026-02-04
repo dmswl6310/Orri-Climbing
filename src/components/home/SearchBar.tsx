@@ -17,7 +17,7 @@ const SearchBar = () => {
       if (inputText.length > 0) {
         try {
           const res = await fetch(
-            `/api/autocomplete?q=${encodeURIComponent(inputText)}`,
+            `${process.env.NEXT_PUBLIC_BASE_URL}/api/autocomplete?q=${encodeURIComponent(inputText)}`,
           );
           const data = await res.json();
           setSuggestions(data);
