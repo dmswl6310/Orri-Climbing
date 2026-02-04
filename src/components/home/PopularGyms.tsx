@@ -1,20 +1,10 @@
 import Link from "next/link";
-import GymCard, { Gym } from "./GymCard";
-import { JSX } from "react/jsx-runtime";
-async function getPopularGyms() {
-  const res = await fetch(
-    `${process.env.NEXT_PUBLIC_BASE_URL}/api/gyms/popular`,
-    {
-      next: { revalidate: 3600 },
-    },
-  );
-
-  if (!res.ok) return [];
-  return res.json();
-}
+import GymCard from "./GymCard";
+import { getPopularGyms } from "@/services/gymService";
+import { GymDetail } from "@/types/gyms/types";
 
 const PopularGyms = async () => {
-  const gyms = await getPopularGyms();
+  const gyms = await getPopularGyms(3);
 
   return (
     <section className="p-8 md:p-16 max-w-7xl mx-auto">
@@ -36,7 +26,7 @@ const PopularGyms = async () => {
       </div>
 
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
-        {gyms.map((gym: JSX.IntrinsicAttributes & Gym) => (
+        {gyms.map((gym: GymDetail) => (
           <GymCard key={gym.id} {...gym} />
         ))}
       </div>
