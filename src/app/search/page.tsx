@@ -1,4 +1,3 @@
-import GymCard from "@/components/home/GymCard";
 import SearchHeader from "@/components/search/SearchHeader";
 import SearchStats from "@/components/search/SearchStats";
 
