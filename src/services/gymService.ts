@@ -1,5 +1,12 @@
 import { MOCK_GYMS } from "@/constants/gyms";
 
+export interface SearchGymSummary {
+  id: string;
+  name: string;
+  district: string;
+  address: string;
+}
+
 export async function getPopularGyms(limit: number = 3) {
   //   const res = await fetch(
   //     `${process.env.NEXT_PUBLIC_BASE_URL}/api/gyms/popular`,
@@ -19,4 +26,13 @@ export async function getPopularGyms(limit: number = 3) {
 
 export async function getGymById(id: string) {
   return MOCK_GYMS.find((g) => g.id === id) || null;
+}
+
+export async function getSearchGymPool() {
+  return MOCK_GYMS.map((gym) => ({
+    id: gym.id,
+    name: gym.name,
+    district: gym.district,
+    address: gym.address,
+  }));
 }
