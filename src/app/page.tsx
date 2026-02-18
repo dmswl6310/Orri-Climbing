@@ -3,6 +3,8 @@ import SearchBar from "@/components/home/SearchBar";
 import PopularGyms from "@/components/home/PopularGyms";
 import { getSearchGymPool } from "@/services/gymService";
 
+export const revalidate = 604800; // 1주일
+
 export default async function HomePage() {
   const gymSearchPool = await getSearchGymPool();
 
