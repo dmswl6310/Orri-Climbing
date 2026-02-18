@@ -1,5 +1,3 @@
-"use client";
-
 import GpsIcon from "../icons/GpsIcon";
 import RefreshIcon from "../icons/RefreshIcon";
 
