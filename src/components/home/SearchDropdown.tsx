@@ -1,13 +1,11 @@
-"use client";
-
 import { SearchGymSummary } from "@/services/gymService";
 
-interface Props {
+interface SearchDropdownProps {
   suggestions: SearchGymSummary[];
   onSelect: (id: string) => void;
 }
 
-const SearchDropdown = ({ suggestions, onSelect }: Props) => {
+const SearchDropdown = ({ suggestions, onSelect }: SearchDropdownProps) => {
   if (suggestions.length === 0) return null;
 
   return (

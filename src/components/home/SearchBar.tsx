@@ -28,6 +28,7 @@ const SearchBar = ({
       )
       .slice(0, 8);
   }, [inputText, gymSearchPool]);
+
   const handleLocationSearch = () => {
     if (!navigator.geolocation)
       return alert("GPS를 지원하지 않는 브라우저입니다.");

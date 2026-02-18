@@ -3,7 +3,7 @@
 import GpsIcon from "../icons/GpsIcon";
 import RefreshIcon from "../icons/RefreshIcon";
 
-interface Props {
+interface LocationFinderProps {
   userLocation: string;
   isLoading: boolean;
   onLocationSearch: () => void;
@@ -13,7 +13,7 @@ const LocationFinder = ({
   userLocation,
   isLoading,
   onLocationSearch,
-}: Props) => (
+}: LocationFinderProps) => (
   <div className="flex justify-between items-end px-1 mb-2.5">
     <button
       onClick={onLocationSearch}

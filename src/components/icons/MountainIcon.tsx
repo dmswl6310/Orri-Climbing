@@ -1,6 +1,4 @@
-interface IconProps {
-  className?: string;
-}
+import { IconProps } from "@/types/types";
 
 const MountainIcon = ({ className = "w-5 h-5" }: IconProps) => {
   return (
