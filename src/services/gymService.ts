@@ -30,3 +30,36 @@ export async function getSearchGymPool() {
     address: gym.address,
   }));
 }
+
+export async function getGyms({
+  q,
+  address,
+}: {
+  q?: string;
+  address?: string;
+}) {
+  let results = [...MOCK_GYMS];
+
+  if (address) {
+    const [gu, dong] = address.split(" ");
+    results = results.filter(
+      (gym) => gym.district.includes(gu) || gym.address.includes(dong),
+    );
+  } else if (q) {
+    const keyword = q.toLowerCase().trim();
+    results = results.filter(
+      (gym) =>
+        gym.name.toLowerCase().includes(keyword) ||
+        gym.district.includes(keyword) ||
+        gym.address.includes(keyword),
+    );
+  }
+
+  // 결과없으면 인기순 리스트 반환
+  if (results.length === 0 || (!q && !address)) {
+    console.log("검색 결과가 없습니다.");
+    return getPopularGyms(10);
+  }
+
+  return results;
+}
