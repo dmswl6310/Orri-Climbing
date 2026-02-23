@@ -1,6 +1,4 @@
-interface IconProps {
-  className?: string;
-}
+import { IconProps } from "@/types/types";
 
 const EyeIcon = ({ className = "w-4 h-4" }: IconProps) => {
   return (

@@ -18,7 +18,7 @@ const PopularGyms = async () => {
           </p>
         </div>
 
-        <Link href="/search" passHref>
+        <Link href="/search">
           <button className="text-xs md:text-sm font-bold text-main-dark bg-main-light/30 px-5 py-2.5 rounded-full hover:bg-main-light/50 transition-all border border-main-light/20">
             전체보기 →
           </button>

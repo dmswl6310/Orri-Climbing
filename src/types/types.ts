@@ -1,6 +1,10 @@
 // import { Session } from "next-auth";
 // import type { ReactNode } from "react";
 
+export interface IconProps {
+  className?: string;
+}
+
 // // 공용 컴포넌트
 // export interface BookmarkProps {
 //   session?: Session | null;
