@@ -4,15 +4,21 @@ import { useRouter } from "next/navigation";
 import { useMemo, useState } from "react";
 import { SearchGymSummary } from "@/services/gymService";
 import SearchDropdown from "./SearchDropdown";
-import LocationFinder from "./LocationFinder";
+import LocationFinder from "../home/LocationFinder";
+
+interface SearchBarProps {
+  gymSearchPool: SearchGymSummary[];
+  variant?: "main" | "float";
+  query?: string;
+}
 
 const SearchBar = ({
   gymSearchPool,
-}: {
-  gymSearchPool: SearchGymSummary[];
-}) => {
+  variant = "main",
+  query = "",
+}: SearchBarProps) => {
   const router = useRouter();
-  const [inputText, setInputText] = useState("");
+  const [inputText, setInputText] = useState(query);
   const [isLoading, setIsLoading] = useState(false);
   const [userLocation, setUserLocation] = useState("내 위치로 검색");
 
