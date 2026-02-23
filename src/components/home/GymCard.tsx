@@ -1,6 +1,7 @@
 import Link from "next/link";
 import EyeIcon from "../icons/EyeIcon";
 import { GymDetail } from "@/types/gyms/types";
+import Image from "next/image";
 
 const GymCard = ({
   id,
@@ -15,12 +16,14 @@ const GymCard = ({
     <div className="group relative bg-white rounded-2xl overflow-hidden border border-gray-100 hover:border-main-light transition-all flex flex-col hover:shadow-xl hover:shadow-main/5">
       {/* 이미지 영역 */}
       <div className="relative aspect-[16/9] overflow-hidden bg-gray-50">
-        <img
+        <Image
           src={thumbnail}
           alt={name}
-          className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-700"
+          fill
+          sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
+          className="object-cover group-hover:scale-105 transition-transform duration-700"
         />
-        {/* 지역 뱃지 (이미지 위에 띄우면 더 세련되어 보입니다) */}
+        {/* 지역 뱃지 */}
         <div className="absolute top-3 left-3 bg-white/90 backdrop-blur-sm px-2 py-0.5 rounded shadow-sm">
           <span className="text-main-dark text-[10px] font-bold">
             {district}
@@ -40,7 +43,7 @@ const GymCard = ({
           </div>
         </div>
 
-        {/* 태그 영역 - 이번에 추가된 핵심 부분 */}
+        {/* 태그 영역 */}
         <div className="flex flex-wrap gap-1">
           {tags?.slice(0, 3).map((tag) => (
             <span
