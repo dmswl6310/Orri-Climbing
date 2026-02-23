@@ -1,4 +1,5 @@
 import { MOCK_GYMS } from "@/constants/gyms";
+import { GymDetail } from "@/types/gyms/types";
 
 export interface SearchGymSummary {
   id: string;
@@ -39,6 +40,7 @@ export async function getGyms({
   address?: string;
 }) {
   let results = [...MOCK_GYMS];
+  let isFallback = false;
 
   if (address) {
     const [gu, dong] = address.split(" ");
@@ -57,9 +59,12 @@ export async function getGyms({
 
   // 결과없으면 인기순 리스트 반환
   if (results.length === 0 || (!q && !address)) {
-    console.log("검색 결과가 없습니다.");
-    return getPopularGyms(10);
+    isFallback = true;
+    results = await getPopularGyms(6);
   }
 
-  return results;
+  return {
+    gyms: results,
+    isFallback: isFallback,
+  };
 }

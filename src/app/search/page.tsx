@@ -40,7 +40,7 @@ export default async function SearchPage({
     address = await getAddressFromCoords(lat, lon);
   }
 
-  const searchResultGyms = await getGyms({ q, address });
+  const { gyms, isFallback } = await getGyms({ q, address });
 
   // const title = address
   //   ? `${address} 주변 암장`
@@ -50,12 +50,32 @@ export default async function SearchPage({
 
   return (
     <div className="flex flex-col min-h-screen">
-      <SearchHeader />
-      <main className="flex-1 p-6 md:p-16 max-w-7xl mx-auto w-full">
-        <SearchStats count={searchResultGyms.length} />
+      {/* <SearchHeader gymSearchPool={pool} query={q} /> */}
+      <main className="p-6 md:p-16 max-w-7xl mx-auto w-full">
+        {isFallback ? (
+          <div className="mb-12 p-8 bg-gray-50 rounded-2xl text-center">
+            <span className="text-4xl mb-4 block">🏝️</span>
+            <h2 className="text-xl font-bold text-gray-800">
+              검색 결과가 없어요
+            </h2>
+            <p className="text-gray-500 mt-2">
+              대신 요즘 가장 핫한 암장들을 추천해 드릴게요!
+            </p>
+          </div>
+        ) : (
+          <div className="mb-8">
+            <h2 className="text-2xl font-black text-gray-900">
+              {address ? `${address} 주변` : `"${q}"`} 검색 결과
+            </h2>
+            <p className="text-gray-500 mt-1">
+              {gyms.length}개의 암장을 찾았습니다.
+            </p>
+          </div>
+        )}
 
+        {/* 2. 리스트 렌더링 */}
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
-          {searchResultGyms.map((gym) => (
+          {gyms.map((gym) => (
             <GymCard key={gym.id} {...gym} />
           ))}
         </div>
