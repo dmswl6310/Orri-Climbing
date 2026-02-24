@@ -1,7 +1,7 @@
 "use client";
 
 import { useRouter } from "next/navigation";
-import { useEffect, useMemo, useState } from "react";
+import { useEffect, useMemo, useRef, useState } from "react";
 import { SearchGymSummary } from "@/services/gymService";
 import SearchDropdown from "./SearchDropdown";
 import LocationFinder from "../home/LocationFinder";
@@ -23,8 +23,25 @@ const SearchBar = ({
   const [inputText, setInputText] = useState(query);
   const [isLoading, setIsLoading] = useState(false);
   const [userLocation, setUserLocation] = useState("내 위치로 검색");
+  const [isDropdownOpen, setIsDropdownOpen] = useState(false);
+  const searchRef = useRef<HTMLDivElement>(null);
 
   const isFloat = variant === "float";
+
+  useEffect(() => {
+    const handleClickOutside = (event: MouseEvent) => {
+      // searchRef 영역(검색창+드롭다운) 밖을 클릭했다면 드롭다운 닫기
+      if (
+        searchRef.current &&
+        !searchRef.current.contains(event.target as Node)
+      ) {
+        setIsDropdownOpen(false);
+      }
+    };
+
+    document.addEventListener("mousedown", handleClickOutside);
+    return () => document.removeEventListener("mousedown", handleClickOutside);
+  }, []);
 
   useEffect(() => {
     setInputText(query);
@@ -77,6 +94,7 @@ const SearchBar = ({
 
   const handleSearch = (query: string) => {
     if (!query.trim()) return;
+    setIsDropdownOpen(false);
     router.push(`/search?q=${encodeURIComponent(query)}`);
   };
 
@@ -103,6 +121,7 @@ const SearchBar = ({
       >
         {/* 검색창 영역 (main일때와 flaot상태일때 다르게)*/}
         <div
+          ref={searchRef}
           className={`${isFloat ? "flex-1 py-2" : "flex-[3] py-3"} relative bg-white rounded-xl shadow-lg shadow-black/5 flex items-center px-5 border border-gray-100 focus-within:border-blue-200 transition-all`}
         >
           {isFloat && (
@@ -123,16 +142,25 @@ const SearchBar = ({
           <input
             type="text"
             value={inputText}
-            onChange={(e) => setInputText(e.target.value)}
+            onFocus={() => setIsDropdownOpen(true)}
+            onChange={(e) => {
+              setInputText(e.target.value);
+              setIsDropdownOpen(true);
+            }}
             onKeyDown={(e) => e.key === "Enter" && handleSearch(inputText)}
             placeholder="지역 또는 암장 이름 검색"
             className="w-full outline-none text-sm md:text-base font-medium bg-transparent"
           />
           {/* 자동완성 드롭다운 */}
-          <SearchDropdown
-            suggestions={suggestions}
-            onSelect={(id) => router.push(`/gyms/${id}`)}
-          />
+          {isDropdownOpen && suggestions.length > 0 && (
+            <SearchDropdown
+              suggestions={suggestions}
+              onSelect={(id) => {
+                setIsDropdownOpen(false);
+                router.push(`/gyms/${id}`);
+              }}
+            />
+          )}
         </div>
         <button
           onClick={() => handleSearch(inputText)}
