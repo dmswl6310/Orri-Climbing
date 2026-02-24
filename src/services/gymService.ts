@@ -1,11 +1,16 @@
 import { MOCK_GYMS } from "@/constants/gyms";
-import { GymDetail } from "@/types/gyms/types";
+import { cache } from "react";
 
 export interface SearchGymSummary {
   id: string;
   name: string;
   district: string;
   address: string;
+}
+
+export interface GetGymsResponse {
+  gyms: typeof MOCK_GYMS;
+  isFallback: boolean;
 }
 
 export async function getPopularGyms(limit: number = 3) {
@@ -23,14 +28,16 @@ export async function getGymById(id: string) {
   return MOCK_GYMS.find((g) => g.id === id) || null;
 }
 
-export async function getSearchGymPool() {
+// 메인 페이지와 검색페이지에서의 중복호출(서버에서 호출)
+export const getSearchGymPool = cache(async (): Promise<SearchGymSummary[]> => {
+  console.log("캐시 X");
   return MOCK_GYMS.map((gym) => ({
     id: gym.id,
     name: gym.name,
     district: gym.district,
     address: gym.address,
   }));
-}
+});
 
 export async function getGyms({
   q,
@@ -38,14 +45,16 @@ export async function getGyms({
 }: {
   q?: string;
   address?: string;
-}) {
+}): Promise<GetGymsResponse> {
   let results = [...MOCK_GYMS];
   let isFallback = false;
 
+  // 1. 주소 필터링
   if (address) {
     const [gu, dong] = address.split(" ");
     results = results.filter(
-      (gym) => gym.district.includes(gu) || gym.address.includes(dong),
+      (gym) =>
+        gym.district.includes(gu) || (dong && gym.address.includes(dong)),
     );
   } else if (q) {
     const keyword = q.toLowerCase().trim();
