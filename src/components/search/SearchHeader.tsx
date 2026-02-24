@@ -13,11 +13,9 @@ const SearchHeader = ({
   <header className="sticky top-0 z-50 bg-white/90 backdrop-blur-md shadow-sm py-3 px-6 md:px-16 border-b border-gray-100">
     <div className="max-w-7xl mx-auto flex items-center gap-6">
       {/* 로고 영역 */}
-      <Link href="/" className="flex-shrink-0">
-        <div className="p-1.5 rounded-lg bg-slate-900 group-hover:bg-blue-600 transition-colors">
-          <MountainIcon className="w-6 h-6 text-white" />
-        </div>
-      </Link>
+      <button className="text-main-dark hover:text-main transition-colors">
+        <MountainIcon className="w-7 h-7" />
+      </button>
 
       <div className="flex-1">
         <SearchBar
