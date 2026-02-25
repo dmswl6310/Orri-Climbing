@@ -29,14 +29,22 @@ export async function getGymById(id: string) {
 }
 
 // 메인 페이지와 검색페이지에서의 중복호출(서버에서 호출)
+const PRE_POOL: SearchGymSummary[] = MOCK_GYMS.map((gym) => ({
+  id: gym.id,
+  name: gym.name,
+  district: gym.district,
+  address: gym.address,
+}));
+
 export const getSearchGymPool = cache(async (): Promise<SearchGymSummary[]> => {
-  console.log("캐시 X");
-  return MOCK_GYMS.map((gym) => ({
-    id: gym.id,
-    name: gym.name,
-    district: gym.district,
-    address: gym.address,
-  }));
+  return PRE_POOL;
+  // db를 쓴다면
+  // async () => {
+  //   const { data } = await supabase.from('gyms').select('id, name, district, address');
+  //   return data;
+  // },
+  // ["search-gym-pool"], // 전역 캐시 키
+  // { revalidate: 86400 } // 24시간 마다 한번식 가져오기
 });
 
 export async function getGyms({
