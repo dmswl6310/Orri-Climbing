@@ -1,5 +1,4 @@
 import MountainIcon from "@/components/icons/MountainIcon";
-import Link from "next/link";
 import SearchBar from "./SearchBar";
 import { SearchGymSummary } from "@/services/gymService";
 
