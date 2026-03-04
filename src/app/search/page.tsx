@@ -1,46 +1,32 @@
 import GymCard from "@/components/home/GymCard";
+import SearchFallback from "@/components/search/SearchFallback";
+import SearchFilter from "@/components/search/SearchFilter";
 import SearchHeader from "@/components/search/SearchHeader";
+import SearchResultsHeader from "@/components/search/SearchResultsHeader";
 import { getGyms, getSearchGymPool } from "@/services/gymService";
-
-async function getAddressFromCoords(lat: string, lon: string) {
-  try {
-    const res = await fetch(
-      `https://dapi.kakao.com/v2/local/geo/coord2regioncode?x=${lon}&y=${lat}`,
-      {
-        headers: { Authorization: `KakaoAK ${process.env.KAKAO_REST_API_KEY}` },
-        next: { revalidate: 3600 },
-      },
-    );
-    if (!res.ok) return ""; // 에러나 문제 생기면 빈문자열 반환
-
-    const data = await res.json();
-    if (!data.documents?.length) return "";
-
-    const haengjeongDong = data.documents.find(
-      (doc: KakaoRegionDocument) => doc.region_type === "H",
-    );
-    const region = haengjeongDong || data.documents[0];
-    return `${region.region_2depth_name} ${region.region_3depth_name}`;
-  } catch (error) {
-    console.error("Kakao AI Error: ", error);
-    return "";
-  }
-}
+import { getAddressFromCoords } from "@/services/kakaoService";
 
 export default async function SearchPage({
   searchParams,
 }: {
-  searchParams: Promise<{ q?: string; lat?: string; lon?: string }>;
+  searchParams: Promise<{
+    q?: string;
+    lat?: string;
+    lon?: string;
+    sort?: string;
+  }>;
 }) {
-  const { q, lat, lon } = await searchParams;
+  const { q, lat, lon, sort } = await searchParams;
   let address = "";
 
+  // 1. 카카오 API로 주소 가져오기
   if (lat && lon) {
     address = await getAddressFromCoords(lat, lon);
   }
 
+  // 2. DB에서 암장 데이터 가져오기 (병렬 처리)
   const [gymData, pool] = await Promise.all([
-    getGyms({ q, address }),
+    getGyms({ q, lat, lon, sort }),
     getSearchGymPool(),
   ]);
 
@@ -50,34 +36,26 @@ export default async function SearchPage({
     <div className="flex flex-col min-h-screen bg-gray-50">
       <SearchHeader gymSearchPool={pool} query={q} />
 
-      <main className="flex-1 p-6 md:p-16 max-w-7xl mx-auto w-full">
+      <main className="flex-1 p-6 md:p-12 max-w-7xl mx-auto w-full">
+        {/* 조건부 헤더 렌더링 */}
         {isFallback ? (
-          <div className="mb-12 p-10 bg-white shadow-sm border border-gray-100 rounded-3xl text-center">
-            <span className="text-5xl mb-4 block">🧗</span>
-            <h2 className="text-2xl font-bold text-gray-800">
-              검색 결과가 없어요
-            </h2>
-            <p className="text-gray-500 mt-2">
-              입력하신 검색어를 확인하시거나, 요즘 인기 있는 암장을 구경해
-              보세요!
-            </p>
-          </div>
+          <SearchFallback />
         ) : (
-          <div className="mb-8 border-b border-gray-200 pb-4">
-            <h2 className="text-2xl font-black text-gray-900">
-              {address ? `📍 ${address} 주변` : `🔍 "${q}"`} 검색 결과
-            </h2>
-            <p className="text-blue-600 font-bold mt-2">
-              총 {gyms.length}개의 암장
-            </p>
-          </div>
+          <SearchResultsHeader
+            address={address}
+            q={q}
+            totalCount={gyms.length}
+          />
         )}
 
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
-          {gyms.map((gym) => (
-            <GymCard key={gym.id} {...gym} />
-          ))}
-        </div>
+        {/* 암장 리스트 */}
+        <section>
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6 md:gap-8">
+            {gyms.map((gym) => (
+              <GymCard key={gym.id} {...gym} />
+            ))}
+          </div>
+        </section>
       </main>
     </div>
   );
