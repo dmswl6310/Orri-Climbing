@@ -2,27 +2,33 @@ import Link from "next/link";
 import EyeIcon from "../icons/EyeIcon";
 import { GymDetail } from "@/types/gyms/types";
 import Image from "next/image";
+import FallbackGymImage from "../common/FallbackGymImage";
 
 const GymCard = ({
   id,
   name,
   thumbnail,
   district,
-  scrapCount,
-  rating,
-  tags,
+  scrapCount = 0,
+  rating = 0,
+  tags = [],
+  // viewCount = 0,
 }: GymDetail) => (
   <Link href={`/gyms/${id}`} className="block">
     <div className="group relative bg-white rounded-2xl overflow-hidden border border-gray-100 hover:border-main-light transition-all flex flex-col hover:shadow-xl hover:shadow-main/5">
       {/* 이미지 영역 */}
       <div className="relative aspect-[16/9] overflow-hidden bg-gray-50">
-        <Image
-          src={thumbnail}
-          alt={name}
-          fill
-          sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
-          className="object-cover group-hover:scale-105 transition-transform duration-700"
-        />
+        {thumbnail ? (
+          <Image
+            src={thumbnail}
+            alt={name}
+            fill
+            sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
+            className="object-cover group-hover:scale-105 transition-transform duration-700"
+          />
+        ) : (
+          <FallbackGymImage />
+        )}
         {/* 지역 뱃지 */}
         <div className="absolute top-3 left-3 bg-white/90 backdrop-blur-sm px-2 py-0.5 rounded shadow-sm">
           <span className="text-main-dark text-[10px] font-bold">
@@ -39,7 +45,10 @@ const GymCard = ({
           </h4>
           <div className="flex items-center gap-1 text-gray-400 mt-1 ml-2">
             <EyeIcon className="w-3.5 h-3.5" />
-            <span className="text-[10px] font-bold tracking-tight">1.2k</span>
+            <span className="text-[10px] font-bold tracking-tight">
+              {/* {viewCount > 1000 ? `${(viewCount/1000).toFixed(1)}k` : viewCount} */}
+              1.2k
+            </span>
           </div>
         </div>
 

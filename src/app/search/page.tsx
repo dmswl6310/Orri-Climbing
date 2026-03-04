@@ -1,6 +1,5 @@
 import GymCard from "@/components/home/GymCard";
 import SearchFallback from "@/components/search/SearchFallback";
-import SearchFilter from "@/components/search/SearchFilter";
 import SearchHeader from "@/components/search/SearchHeader";
 import SearchResultsHeader from "@/components/search/SearchResultsHeader";
 import { getGyms, getSearchGymPool } from "@/services/gymService";
