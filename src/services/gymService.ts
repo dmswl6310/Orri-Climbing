@@ -1,5 +1,7 @@
 import { MOCK_GYMS } from "@/constants/gyms";
-import { cache } from "react";
+import { GymDetail } from "@/types/gyms/types";
+import { getDistance } from "@/utils.math";
+import { unstable_cache } from "next/cache";
 
 export interface SearchGymSummary {
   id: string;
@@ -9,7 +11,7 @@ export interface SearchGymSummary {
 }
 
 export interface GetGymsResponse {
-  gyms: typeof MOCK_GYMS;
+  gyms: GymDetail[];
   isFallback: boolean;
 }
 
@@ -36,35 +38,41 @@ const PRE_POOL: SearchGymSummary[] = MOCK_GYMS.map((gym) => ({
   address: gym.address,
 }));
 
-export const getSearchGymPool = cache(async (): Promise<SearchGymSummary[]> => {
+export async function getSearchGymPool(): Promise<SearchGymSummary[]> {
   return PRE_POOL;
-  // db를 쓴다면
-  // async () => {
-  //   const { data } = await supabase.from('gyms').select('id, name, district, address');
-  //   return data;
-  // },
-  // ["search-gym-pool"], // 전역 캐시 키
-  // { revalidate: 86400 } // 24시간 마다 한번식 가져오기
-});
+}
+
+// db를 쓴다면
+// export const getSearchGymPool = unstable_cache(
+//   async () => {
+//     const { data } = await supabase
+//       .from("gyms")
+//       .select("id, name, district, address");
+//     return data;
+//   },
+//   ["search-gym-pool"], // 캐시 키
+//   {
+//     revalidate: 86400, // 24시간 마다 한번식 가져오기
+//     tags: ["search-gym-pool"], // revalidateTag하면 24시간 기준 상관없이 업데이트함)
+//   },
+// );
 
 export async function getGyms({
   q,
-  address,
+  lat,
+  lon,
+  sort,
 }: {
   q?: string;
-  address?: string;
+  lat?: string;
+  lon?: string;
+  sort?: string;
 }): Promise<GetGymsResponse> {
   let results = [...MOCK_GYMS];
   let isFallback = false;
 
-  // 1. 주소 필터링
-  if (address) {
-    const [gu, dong] = address.split(" ");
-    results = results.filter(
-      (gym) =>
-        gym.district.includes(gu) || (dong && gym.address.includes(dong)),
-    );
-  } else if (q) {
+  // 1단계 : 키워드로 필터링(q 있을 때만)
+  if (q) {
     const keyword = q.toLowerCase().trim();
     results = results.filter(
       (gym) =>
@@ -74,8 +82,25 @@ export async function getGyms({
     );
   }
 
-  // 결과없으면 인기순 리스트 반환
-  if (results.length === 0 || (!q && !address)) {
+  // 정렬 기준 정하기
+  const currentSort = sort || (lat && lon ? "distance" : "popular");
+
+  // 2단계 : 정렬 실행
+  if (currentSort === "distance" && lat && lon) {
+    const userLat = Number(lat);
+    const userLon = Number(lon);
+    results.sort(
+      (a, b) =>
+        getDistance(userLat, userLon, a.lat, a.lon) -
+        getDistance(userLat, userLon, b.lat, b.lon),
+    );
+  } else if (sort === "popular") {
+    results.sort((a, b) => b.scrapCount - a.scrapCount);
+  }
+  // currentSort==="newest"라면 기본 배열 유지
+
+  // 3단계 : 검색 결과가 0개면 fallback 처리
+  if (results.length === 0) {
     isFallback = true;
     results = await getPopularGyms(6);
   }
