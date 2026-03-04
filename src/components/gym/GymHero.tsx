@@ -13,6 +13,7 @@ const GymHero = ({ name, address, thumbnail }: GymHeroProps) => (
       <Image
         src={thumbnail}
         alt={name}
+        fill
         className="w-full h-full object-cover opacity-80" // 텍스트 가독성을 위해 살짝 어둡게
       />
     ) : (
