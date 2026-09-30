@@ -3,6 +3,7 @@ import type { GymDetail } from "@/types/gyms/types";
 import GymImage from "@/components/common/GymImage";
 import { availabilityLabel, getDailyPrice, getFacilityStatus } from "@/utils/gymFacts";
 import { FACILITY_KEYS, FACILITY_LABELS } from "@/utils/search";
+import CompareButton from "@/components/comparison/CompareButton";
 
 type GymCardProps = Pick<GymDetail, "id" | "name" | "thumbnail" | "district" | "scrapCount" | "rating" | "tags" | "facilities" | "prices" | "amenities" | "beginnerLesson" | "isDemo"> & {
   distanceKm?: number;
@@ -11,8 +12,8 @@ type GymCardProps = Pick<GymDetail, "id" | "name" | "thumbnail" | "district" | "
 export default function GymCard({ id, name, thumbnail, district, scrapCount = 0, rating = 0, tags = [], distanceKm, ...facts }: GymCardProps) {
   const price = getDailyPrice(facts);
   return (
-    <Link href={`/gyms/${id}`} className="block h-full">
       <article className="group h-full bg-white rounded-2xl overflow-hidden border border-gray-200 hover:border-main-dark transition-all flex flex-col hover:shadow-lg">
+        <Link href={`/gyms/${id}`} className="flex flex-col flex-1">
         <div className="relative aspect-[16/9] overflow-hidden bg-gray-50">
           <GymImage src={thumbnail} alt={name}
             sizes="(max-width: 640px) 100vw, (max-width: 1024px) 50vw, 33vw"
@@ -35,7 +36,8 @@ export default function GymCard({ id, name, thumbnail, district, scrapCount = 0,
             <span aria-label={`평점 ${rating.toFixed(1)}점`}>★ {rating.toFixed(1)}</span>
           </div>
         </div>
+        </Link>
+        <div className="px-4 pb-4"><CompareButton id={id} name={name} /></div>
       </article>
-    </Link>
   );
 }

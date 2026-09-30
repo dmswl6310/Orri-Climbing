@@ -24,7 +24,11 @@ body {
   letter-spacing: -0.02em;
 }
 
-:where(a, button, input):focus-visible {
+:where(a, button, input, select, textarea, [tabindex]):focus-visible {
   outline: 2px solid #3a5e9a;
   outline-offset: 4px;
+}
+
+html:has([aria-label="비교 후보"]) {
+  scroll-padding-bottom: 45dvh;
 }
