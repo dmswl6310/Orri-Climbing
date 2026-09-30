@@ -4,9 +4,9 @@ export default function SearchFallback() {
     <section className="mb-8">
       <div className="p-10 bg-white shadow-sm border border-gray-100 rounded-3xl text-center mb-10">
         <span className="text-5xl mb-4 block">🧗</span>
-        <h1 className="text-2xl font-bold text-gray-800">검색 결과가 없어요</h1>
+        <h2 className="text-2xl font-bold text-gray-800">검색 결과가 없어요</h2>
         <p className="text-gray-500 mt-2">
-          입력하신 검색어를 확인하시거나, 요즘 인기 있는 암장을 구경해 보세요!
+          검색어나 방문 조건을 변경해주세요. 아래는 현재 조건과 무관한 추천 암장입니다.
         </p>
       </div>
       <div className="mb-4">

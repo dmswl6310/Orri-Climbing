@@ -8,6 +8,7 @@ import { useRouter } from "next/navigation";
 import RefreshIcon from "../icons/RefreshIcon";
 import GpsIcon from "../icons/GpsIcon";
 import SearchDropdown from "./SearchDropdown";
+import { buildSearchHref, type SearchParams } from "@/utils/search";
 
 interface SearchInputBoxProps {
   gymSearchPool: SearchGymSummary[];
@@ -15,6 +16,7 @@ interface SearchInputBoxProps {
   isFloat: boolean;
   isLoading: boolean;
   onLocationSearch: () => void;
+  searchContext?: SearchParams;
 }
 
 export default function SearchInputBox(props: SearchInputBoxProps) {
@@ -22,7 +24,7 @@ export default function SearchInputBox(props: SearchInputBoxProps) {
   return <SearchInput key={props.query} {...props} />;
 }
 
-function SearchInput({ gymSearchPool, query, isFloat, isLoading, onLocationSearch }: SearchInputBoxProps) {
+function SearchInput({ gymSearchPool, query, isFloat, isLoading, onLocationSearch, searchContext = {} }: SearchInputBoxProps) {
   const router = useRouter();
   const id = useId();
   const listId = `${id}-suggestions`;
@@ -33,10 +35,9 @@ function SearchInput({ gymSearchPool, query, isFloat, isLoading, onLocationSearc
   const select = (gymId: string) => { cancelLocationSearch(); close(); router.push(`/gyms/${gymId}`); };
   const search = () => {
     const keyword = inputText.trim();
-    if (!keyword) return;
     cancelLocationSearch();
     close();
-    router.push(`/search?q=${encodeURIComponent(keyword)}`);
+    router.push(buildSearchHref(searchContext, { q: keyword || undefined }));
   };
 
   return (
@@ -52,6 +53,7 @@ function SearchInput({ gymSearchPool, query, isFloat, isLoading, onLocationSearc
         <span aria-hidden="true" className="text-gray-500 mr-2">🔍</span>
         <label htmlFor={id} className="sr-only">지역 또는 암장 이름 검색</label>
         <input id={id} type="search" role="combobox" autoComplete="off"
+          maxLength={100}
           aria-autocomplete="list" aria-expanded={expanded}
           aria-controls={expanded ? listId : undefined}
           aria-activedescendant={expanded && activeIndex >= 0 ? `${listId}-${activeIndex}` : undefined}

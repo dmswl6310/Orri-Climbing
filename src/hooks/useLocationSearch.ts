@@ -1,6 +1,6 @@
 import { useRouter } from "next/navigation";
 import { useEffect, useRef, useState, useTransition } from "react";
-import { validCoordinates } from "@/utils/search";
+import { buildSearchHref, validCoordinates, type SearchParams } from "@/utils/search";
 
 // Browser geolocation has no abort API. Invalidate callbacks whenever a newer
 // search/sort supersedes the request, including requests from another control.
@@ -9,12 +9,13 @@ export function cancelLocationSearch() {
   cancelActiveRequest?.();
 }
 
-export function useLocationSearch(query = "") {
+export function useLocationSearch(query = "", searchContext: SearchParams = {}) {
   const router = useRouter();
   const [locating, setLocating] = useState(false);
   const [isPending, startTransition] = useTransition();
   const [error, setError] = useState("");
   const cancelOwnRequest = useRef<(() => void) | undefined>(undefined);
+  const contextKey = buildSearchHref(searchContext, { q: query });
 
   useEffect(() => {
     const handleBack = () => cancelOwnRequest.current?.();
@@ -32,7 +33,7 @@ export function useLocationSearch(query = "") {
       window.removeEventListener("popstate", handleBack);
       document.removeEventListener("click", handleLinkNavigation, true);
     };
-  }, [query]);
+  }, [contextKey]);
 
   const handleLocationSearch = () => {
     if (cancelOwnRequest.current || isPending) return;
@@ -62,9 +63,8 @@ export function useLocationSearch(query = "") {
             setError("올바른 위치를 받지 못했습니다. 다시 시도하거나 지역명으로 검색해주세요.");
             return;
           }
-          const params = new URLSearchParams({ lat: String(latitude), lon: String(longitude), sort: "distance" });
-          if (query.trim()) params.set("q", query.trim());
-          startTransition(() => router.push(`/search?${params}`));
+          const href = buildSearchHref(searchContext, { q: query, lat: String(latitude), lon: String(longitude), sort: "distance" });
+          startTransition(() => router.push(href));
         },
         (failure) => {
           if (!active) return;

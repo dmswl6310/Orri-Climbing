@@ -36,6 +36,7 @@ export default async function GymDetailPage({
           facilities={gym.facilities}
           prices={gym.prices}
           difficultySystem={gym.difficultySystem}
+          beginnerLesson={gym.beginnerLesson}
         />
 
         {/* 사이드 액션 섹션 */}

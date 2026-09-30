@@ -41,7 +41,7 @@ describe("search ordering", () => {
     const { gyms } = await getGyms({ q: "  게이트원  ", sort: "popular" });
     expect(gyms.map((gym) => gym.id)).toEqual(["2"]);
     const { gyms: all } = await getGyms({});
-    expect(all).toHaveLength(50);
+    expect(all).toHaveLength(53);
   });
 
   it("labels recommended results separately when no gym matches", async () => {

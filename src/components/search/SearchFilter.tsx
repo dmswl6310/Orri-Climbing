@@ -3,17 +3,14 @@
 import { useRouter, useSearchParams } from "next/navigation";
 import { useTransition } from "react";
 import { cancelLocationSearch, useLocationSearch } from "@/hooks/useLocationSearch";
-import { normalizeSearch, type SearchSort } from "@/utils/search";
+import { buildSearchHref, normalizeSearch, readSearchParams, type SearchSort } from "@/utils/search";
 
 export default function SearchFilter() {
   const router = useRouter();
   const searchParams = useSearchParams();
-  const values = (key: string) => {
-    const values = searchParams.getAll(key);
-    return values.length > 1 ? values : values[0];
-  };
-  const { q, coordinates, sort } = normalizeSearch({ q: values("q"), lat: values("lat"), lon: values("lon"), sort: values("sort") });
-  const { isLoading, error, handleLocationSearch } = useLocationSearch(q);
+  const context = readSearchParams(searchParams);
+  const { q, coordinates, sort } = normalizeSearch(context);
+  const { isLoading, error, handleLocationSearch } = useLocationSearch(q, context);
   const [isPending, startTransition] = useTransition();
 
   const handleSort = (nextSort: SearchSort) => {
@@ -21,14 +18,8 @@ export default function SearchFilter() {
       handleLocationSearch();
       return;
     }
-    const params = new URLSearchParams({ sort: nextSort });
     cancelLocationSearch();
-    if (q) params.set("q", q);
-    if (coordinates) {
-      params.set("lat", String(coordinates.lat));
-      params.set("lon", String(coordinates.lon));
-    }
-    startTransition(() => router.push(`/search?${params}`));
+    startTransition(() => router.push(buildSearchHref(context, { sort: nextSort })));
   };
 
   return (

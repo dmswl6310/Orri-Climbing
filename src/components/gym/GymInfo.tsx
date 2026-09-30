@@ -1,4 +1,5 @@
 import type { DifficultySystem, GymPrice, OperatingHour } from "@/types/gyms/types";
+import { availabilityLabel } from "@/utils/gymFacts";
 
 interface GymInfoProps {
   description: string;
@@ -6,9 +7,10 @@ interface GymInfoProps {
   facilities: string[];
   prices?: GymPrice[];
   difficultySystem?: DifficultySystem;
+  beginnerLesson?: boolean;
 }
 
-export default function GymInfo({ description, hours, facilities, prices = [], difficultySystem }: GymInfoProps) {
+export default function GymInfo({ description, hours, facilities, prices = [], difficultySystem, beginnerLesson }: GymInfoProps) {
   return (
     <div className="lg:col-span-2 space-y-10">
       <section>
@@ -39,6 +41,7 @@ export default function GymInfo({ description, hours, facilities, prices = [], d
       </section>}
       <section>
         <h2 className="text-2xl font-bold mb-4">💳 요금 안내</h2>
+        <p className="mb-4 text-sm text-gray-600">초보자 체험 강습: {availabilityLabel(beginnerLesson)}</p>
         {prices.length ? <div className="overflow-x-auto rounded-2xl border border-gray-200">
           <table className="w-full text-left">
             <caption className="sr-only">암장 이용 요금</caption>

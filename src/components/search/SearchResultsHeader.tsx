@@ -1,4 +1,3 @@
-import SearchFilter from "./SearchFilter";
 
 interface SearchResultsHeaderProps {
   address: string;
@@ -27,8 +26,6 @@ export default function SearchResultsHeader({
           </p>
         </div>
 
-        {/* 필터 버튼 */}
-        <SearchFilter />
       </div>
     </section>
   );
