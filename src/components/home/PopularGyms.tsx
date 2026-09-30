@@ -10,18 +10,16 @@ const PopularGyms = async () => {
     <section className="p-8 md:p-16 max-w-7xl mx-auto">
       <div className="flex justify-between items-end mb-10">
         <div>
-          <h3 className="font-bold text-gray-900 text-2xl md:text-3xl tracking-tight mb-2">
-            🔥 이번 주 인기 암장
-          </h3>
+          <h2 className="font-bold text-gray-900 text-2xl md:text-3xl tracking-tight mb-2">
+            🔥 인기 암장
+          </h2>
           <p className="text-gray-400 text-sm font-medium">
-            클라이머들이 가장 많이 확인한 암장들이에요
+            누적 저장 수가 많은 순서로 보여드려요
           </p>
         </div>
 
-        <Link href="/search">
-          <button className="text-xs md:text-sm font-bold text-main-dark bg-main-light/30 px-5 py-2.5 rounded-full hover:bg-main-light/50 transition-all border border-main-light/20">
+        <Link href="/search" className="text-xs md:text-sm font-bold text-main-dark bg-main-light/30 px-5 py-2.5 rounded-full hover:bg-main-light/50 transition-all border border-main-light/20 whitespace-nowrap">
             전체보기 →
-          </button>
         </Link>
       </div>
 

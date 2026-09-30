@@ -1,3 +1,6 @@
+import { redirect } from "next/navigation";
+
+// Saved gyms will be available after account storage is implemented.
 export default function SettingsPage() {
-  return <div>마이페이지</div>;
+  redirect("/search");
 }

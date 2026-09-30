@@ -20,7 +20,6 @@ const HeroSection = () => (
         </p>
       </div>
     </div>
-    <div className="absolute bottom-4 right-8 md:right-28 w-36 md:w-64 lg:w-80 h-36 md:h-64 lg:h-80 bg-[url('/climbing-img.png')] bg-contain bg-right-bottom bg-no-repeat opacity-30 hidden sm:block pointer-events-none" />
   </section>
 );
 
