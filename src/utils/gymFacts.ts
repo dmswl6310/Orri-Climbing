@@ -2,8 +2,8 @@ import type { GymDetail } from "@/types/gyms/types";
 import type { Facility } from "./search";
 
 const facilityAliases: Record<Facility, string[]> = {
-  parking: ["주차가능", "무료주차", "유료주차", "주차"],
-  shower: ["샤워실", "샤워가능"],
+  parking: ["주차가능", "무료주차", "유료주차", "주차", "주차협소"],
+  shower: ["샤워실", "샤워가능", "단독샤워룸", "깔끔한샤워실", "단독샤워"],
   rental: ["암벽화대여", "암벽화 대여", "신발대여"],
 };
 

@@ -30,6 +30,11 @@ function ChoiceForm({ params }: { params: SearchParams }) {
     cancelLocationSearch();
     startTransition(() => router.push(href, { scroll: false }));
   }
+  function resetDraft() {
+    setBudget("");
+    setChoices(normalizeSearch({}).filters);
+    setError("");
+  }
 
   return (
     <section aria-label="방문 조건 필터" className="mb-8 rounded-2xl border border-gray-200 bg-white p-5 md:p-6">
@@ -71,8 +76,8 @@ function ChoiceForm({ params }: { params: SearchParams }) {
           {error && <p id={`${id}-error`} role="alert" className="text-sm text-red-700">{error}</p>}
           <div className="flex flex-wrap items-center gap-4">
             <button type="submit" className="rounded-xl bg-main-dark px-5 py-2.5 text-sm font-bold text-white disabled:opacity-50">{pending ? "적용 중..." : "조건 적용"}</button>
-            <Link href={resetHref} scroll={false} className="text-sm underline underline-offset-4">필터 초기화</Link>
-            <Link href="/search" className="text-sm text-gray-600 underline underline-offset-4">전체 초기화</Link>
+            <Link href={resetHref} onClick={resetDraft} scroll={false} className="text-sm underline underline-offset-4">필터 초기화</Link>
+            <Link href="/search" onClick={resetDraft} className="text-sm text-gray-600 underline underline-offset-4">전체 초기화</Link>
           </div>
         </fieldset>
       </form>

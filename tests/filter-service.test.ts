@@ -1,6 +1,13 @@
 import { expect, it } from "vitest";
 import { getGyms } from "@/services/gymService";
 
+it("recognizes shower and limited parking facts from the existing catalogue", async () => {
+  const showers = (await getGyms({ shower: "1" })).gyms.map(({ id }) => id);
+  expect(showers).toEqual(expect.arrayContaining(["6", "16", "34"]));
+  const parking = (await getGyms({ parking: "1" })).gyms.map(({ id }) => id);
+  expect(parking).toContain("14");
+});
+
 it("does not return gyms lacking required facilities", async () => {
   const { gyms } = await getGyms({ parking: "1", shower: "1" });
   expect(gyms.some((gym) => gym.id === "2")).toBe(false);

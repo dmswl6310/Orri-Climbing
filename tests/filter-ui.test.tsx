@@ -12,6 +12,20 @@ vi.mock("next/navigation", () => ({
 }));
 beforeEach(() => { nav.query = "q=강남&parking=1&maxPrice=20000&lat=37&lon=127"; });
 
+it.each(["필터 초기화", "전체 초기화"])("clears unsaved drafts and errors even when %s targets the current URL", async (label) => {
+  nav.query = "";
+  render(<SearchChoices />);
+  await userEvent.type(screen.getByLabelText("일일 이용권 최대 가격"), "-1");
+  await userEvent.click(screen.getByRole("checkbox", { name: "주차" }));
+  await userEvent.click(screen.getByRole("button", { name: "조건 적용" }));
+  const reset = screen.getByRole("link", { name: label });
+  reset.addEventListener("click", (event) => event.preventDefault());
+  await userEvent.click(reset);
+  expect(screen.getByLabelText("일일 이용권 최대 가격")).toHaveValue("");
+  expect(screen.getByRole("checkbox", { name: "주차" })).not.toBeChecked();
+  expect(screen.queryByRole("alert")).not.toBeInTheDocument();
+});
+
 it("applies all draft conditions and resets only filters", async () => {
   render(<SearchChoices />);
   expect(screen.getByRole("checkbox", { name: "주차" })).toBeChecked();
