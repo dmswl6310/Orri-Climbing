@@ -12,7 +12,7 @@ export const metadata: Metadata = { title: "암장 검색" };
 export default async function SearchPage({ searchParams }: { searchParams: Promise<SearchParams> }) {
   const params = await searchParams;
   const { q, coordinates, invalidCoordinates } = normalizeSearch(params);
-  const [{ gyms, isFallback }, pool, address] = await Promise.all([
+  const [{ gyms, recommendations, isFallback }, pool, address] = await Promise.all([
     getGyms(params),
     getSearchGymPool(),
     coordinates ? getAddressFromCoords(String(coordinates.lat), String(coordinates.lon)) : Promise.resolve(""),
@@ -27,7 +27,7 @@ export default async function SearchPage({ searchParams }: { searchParams: Promi
         {isFallback ? <SearchFallback /> : <SearchResultsHeader address={address} q={q} totalCount={gyms.length} hasLocation={Boolean(coordinates)} />}
         <section aria-label={isFallback ? "추천 암장" : "검색 결과"}>
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6 md:gap-8">
-            {gyms.map((gym) => <GymCard key={gym.id} {...gym} />)}
+            {(isFallback ? recommendations : gyms).map((gym) => <GymCard key={gym.id} {...gym} />)}
           </div>
         </section>
       </div>

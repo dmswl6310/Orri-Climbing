@@ -1,6 +1,7 @@
 export type SearchGymSummary = Pick<GymDetail, "id" | "name" | "district" | "address">;
 
 export interface GymPrice {
+  kind?: "day-pass" | "other";
   label: string;
   amount: number;
 }
@@ -35,6 +36,9 @@ export interface GymDetail {
   facilities: string[]; // ["샤워실", "주차가능", ...]
   difficultySystem: DifficultySystem;
   prices?: GymPrice[];
+  amenities?: Partial<Record<"parking" | "shower" | "rental", boolean>>;
+  beginnerLesson?: boolean;
+  isDemo?: boolean;
 }
 
 export type GymSummary = Pick<

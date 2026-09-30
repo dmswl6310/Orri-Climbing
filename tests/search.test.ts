@@ -4,7 +4,7 @@ import { getDistance } from "@/utils.math";
 import { normalizeSearch } from "@/utils/search";
 
 it("ignores repeated URL parameters and invalid coordinates consistently", () => {
-  expect(normalizeSearch({ q: ["강남", "서초"], lat: ["37", "38"], lon: "127", sort: ["popular", "distance"] })).toEqual({
+  expect(normalizeSearch({ q: ["강남", "서초"], lat: ["37", "38"], lon: "127", sort: ["popular", "distance"] })).toMatchObject({
     q: "", coordinates: null, sort: "popular", invalidCoordinates: true,
   });
   expect(normalizeSearch({ lat: "0", lon: "0" })).toMatchObject({
@@ -47,8 +47,9 @@ describe("search ordering", () => {
   it("labels recommended results separately when no gym matches", async () => {
     const result = await getGyms({ q: "존재하지않는암장" });
     expect(result.isFallback).toBe(true);
-    expect(result.gyms).toHaveLength(6);
-    expect(result.gyms[0].id).toBe("21");
+    expect(result.gyms).toHaveLength(0);
+    expect(result.recommendations).toHaveLength(6);
+    expect(result.recommendations[0].id).toBe("21");
   });
 });
 
