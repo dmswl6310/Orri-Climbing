@@ -15,12 +15,13 @@ const LocationFinder = ({
   <div className="flex justify-between items-end px-1 mb-2.5">
     <button
       onClick={onLocationSearch}
+      disabled={isLoading}
       className="flex items-center gap-1.5 text-sm font-semibold text-blue-600 hover:text-blue-800 transition-colors"
     >
       <GpsIcon className="w-4 h-4" />
       <span className="truncate max-w-[150px]">{userLocation}</span>
     </button>
-    <button onClick={onLocationSearch} className="p-1 group">
+    <button onClick={onLocationSearch} disabled={isLoading} aria-label="위치 다시 찾기" className="p-2 group">
       <RefreshIcon
         className={`w-3.5 h-3.5 text-gray-400 group-hover:text-gray-600 transition-all ${
           isLoading ? "animate-spin" : ""

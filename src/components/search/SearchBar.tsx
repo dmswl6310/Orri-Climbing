@@ -1,6 +1,6 @@
 "use client";
 
-import { SearchGymSummary } from "@/services/gymService";
+import type { SearchGymSummary } from "@/types/gyms/types";
 import LocationFinder from "../home/LocationFinder";
 import { useLocationSearch } from "@/hooks/useLocationSearch";
 import SearchInputBox from "./SearchInputBox";
@@ -17,7 +17,7 @@ const SearchBar = ({
   query = "",
 }: SearchBarProps) => {
   const isFloat = variant === "float";
-  const { isLoading, userLocation, handleLocationSearch } = useLocationSearch();
+  const { isLoading, userLocation, error, handleLocationSearch } = useLocationSearch(query);
 
   return (
     // float일땐 꽉차게, 메인에선 크게
@@ -44,6 +44,7 @@ const SearchBar = ({
         isLoading={isLoading}
         onLocationSearch={handleLocationSearch}
       />
+      {error && <p role="alert" className="mt-3 rounded-lg bg-red-50 p-3 text-sm text-red-700">{error}</p>}
     </section>
   );
 };

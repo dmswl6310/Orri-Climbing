@@ -1,4 +1,4 @@
-interface KakaoRegionDocument {
+export interface KakaoRegionDocument {
   region_type: "H" | "B"; // 행정동 또는 법정동
   address_name: string; // 전체 주소 명칭
   region_1depth_name: string; // 시도 단위
@@ -9,10 +9,3 @@ interface KakaoRegionDocument {
   x: number; // 경도
   y: number; // 위도
 }
-
-// interface KakaoRegionResponse {
-//   meta: {
-//     total_count: number;
-//   };
-//   documents: KakaoRegionDocument[];
-// }

@@ -1,31 +1,28 @@
-import { SearchGymSummary } from "@/services/gymService";
+import type { SearchGymSummary } from "@/types/gyms/types";
 
 interface SearchDropdownProps {
   suggestions: SearchGymSummary[];
   onSelect: (id: string) => void;
+  listId: string;
+  activeIndex: number;
+  onHighlight: (index: number) => void;
 }
 
-const SearchDropdown = ({ suggestions, onSelect }: SearchDropdownProps) => {
-  if (suggestions.length === 0) return null;
-
+export default function SearchDropdown({ suggestions, onSelect, listId, activeIndex, onHighlight }: SearchDropdownProps) {
   return (
-    <div className="absolute top-[110%] left-0 w-full bg-white rounded-xl shadow-xl border border-gray-100 py-2 z-50 overflow-hidden">
-      {suggestions.map((item) => (
-        <div
-          key={item.id}
+    <ul id={listId} role="listbox" aria-label="암장 추천"
+      className="absolute top-[110%] left-0 w-full max-h-80 overflow-y-auto bg-white rounded-xl shadow-xl border border-gray-200 py-2 z-50">
+      {suggestions.map((item, index) => (
+        <li key={item.id} id={`${listId}-${index}`} role="option" aria-selected={activeIndex === index}
+          ref={(element) => { if (activeIndex === index) element?.scrollIntoView?.({ block: "nearest" }); }}
+          onMouseDown={(event) => event.preventDefault()}
+          onMouseEnter={() => onHighlight(index)}
           onClick={() => onSelect(item.id)}
-          className="px-5 py-3 hover:bg-blue-50 cursor-pointer border-b border-gray-50 last:border-0 flex flex-col transition-colors"
-        >
-          <div className="flex items-center gap-2">
-            <span className="text-blue-500 font-bold text-sm">{item.name}</span>
-          </div>
-          <span className="text-[11px] text-gray-400 mt-0.5">
-            {item.district} · {item.address}
-          </span>
-        </div>
+          className={`px-4 py-3 cursor-pointer border-b border-gray-100 last:border-0 flex flex-col ${activeIndex === index ? "bg-blue-50" : "hover:bg-blue-50"}`}>
+          <span className="text-blue-700 font-bold text-sm">{item.name}</span>
+          <span className="text-xs text-gray-600 mt-1">{item.district} · {item.address}</span>
+        </li>
       ))}
-    </div>
+    </ul>
   );
-};
-
-export default SearchDropdown;
+}
