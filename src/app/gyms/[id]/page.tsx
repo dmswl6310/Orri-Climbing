@@ -40,7 +40,7 @@ export default async function GymDetailPage({
         />
 
         {/* 사이드 액션 섹션 */}
-        <GymActionSide id={gym.id} name={gym.name} rating={gym.rating} scrapCount={gym.scrapCount} />
+        <GymActionSide id={gym.id} name={gym.name} />
       </div>
     </div>
   );

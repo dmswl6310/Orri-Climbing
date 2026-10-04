@@ -49,7 +49,7 @@ test("GPS and popularity sorting retain active filters", async ({ page }) => {
   await page.goto("/search?q=데모&maxPrice=15000&parking=1");
   await page.getByRole("button", { name: "📍 거리순" }).click();
   await expect(page).toHaveURL(/maxPrice=15000&parking=1&lat=37.49&lon=127.03&sort=distance/);
-  await page.getByRole("button", { name: "🔥 인기순" }).click();
+  await page.getByRole("button", { name: "기본순" }).click();
   await expect(page).toHaveURL(/maxPrice=15000&parking=1&lat=37.49&lon=127.03&sort=popular/);
   await expect(page.getByRole("region", { name: "검색 결과", exact: true }).getByRole("article")).toHaveCount(1);
 });

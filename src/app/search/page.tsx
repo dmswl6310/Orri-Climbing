@@ -22,7 +22,7 @@ export default async function SearchPage({ searchParams }: { searchParams: Promi
     <div className="flex flex-col min-h-screen bg-gray-50">
       <SearchHeader gymSearchPool={pool} query={q} searchContext={params} />
       <div className="flex-1 p-6 md:p-12 max-w-7xl mx-auto w-full">
-        {invalidCoordinates && <p role="status" className="mb-4 rounded-xl bg-amber-50 p-4 text-sm text-amber-900">위치 정보가 올바르지 않아 인기순으로 표시합니다. 위치 검색을 다시 시도해주세요.</p>}
+        {invalidCoordinates && <p role="status" className="mb-4 rounded-xl bg-amber-50 p-4 text-sm text-amber-900">위치 정보가 올바르지 않아 기본순으로 표시합니다. 위치 검색을 다시 시도해주세요.</p>}
         {invalidFilters && <p role="status" className="mb-4 rounded-xl bg-amber-50 p-4 text-sm text-amber-900">올바르지 않은 필터 값은 제외했습니다. 방문 조건을 다시 확인해주세요.</p>}
         {coordinates && !address && <p role="status" className="mb-4 text-sm text-gray-600">주소 이름을 확인하지 못했지만, 거리 정보는 현재 좌표를 기준으로 표시합니다.</p>}
         <SearchChoices />

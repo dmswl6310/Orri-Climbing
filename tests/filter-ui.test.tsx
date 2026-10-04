@@ -54,7 +54,7 @@ it("keeps invalid budgets on screen with an error instead of silently applying",
 
 it("retains the budget and facilities when sorting", async () => {
   render(<SearchFilter />);
-  await userEvent.click(screen.getByRole("button", { name: "🔥 인기순" }));
+  await userEvent.click(screen.getByRole("button", { name: "기본순" }));
   const params = new URL(nav.push.mock.calls[0][0], "https://example.test").searchParams;
   expect(params.get("parking")).toBe("1");
   expect(params.get("maxPrice")).toBe("20000");

@@ -11,7 +11,7 @@ export default function SearchFallback() {
       </div>
       <div className="mb-4">
         <h2 className="text-xl font-bold text-gray-900">
-          🔥 누적 저장 수가 많은 암장
+          다른 암장 둘러보기
         </h2>
       </div>
     </section>

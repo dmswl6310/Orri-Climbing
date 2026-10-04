@@ -1,20 +1,20 @@
 import Link from "next/link";
 import GymCard from "./GymCard";
-import { getPopularGyms } from "@/services/gymService";
+import { getFeaturedGyms } from "@/services/gymService";
 import { GymDetail } from "@/types/gyms/types";
 
 const PopularGyms = async () => {
-  const gyms = await getPopularGyms(3);
+  const gyms = await getFeaturedGyms(3);
 
   return (
     <section className="p-8 md:p-16 max-w-7xl mx-auto">
       <div className="flex justify-between items-end mb-10">
         <div>
           <h2 className="font-bold text-gray-900 text-2xl md:text-3xl tracking-tight mb-2">
-            🔥 인기 암장
+            둘러볼 암장
           </h2>
           <p className="text-gray-400 text-sm font-medium">
-            누적 저장 수가 많은 순서로 보여드려요
+            데모에 지정된 순서입니다. 실제 인기 순위가 아닙니다.
           </p>
         </div>
 

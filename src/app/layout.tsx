@@ -7,6 +7,8 @@ import { Suspense } from "react";
 import { getSearchGymPool } from "@/services/gymService";
 import ComparisonProvider from "@/components/comparison/ComparisonProvider";
 import ComparisonTray from "@/components/comparison/ComparisonTray";
+import SavedProvider from "@/components/saved/SavedProvider";
+import SavedNotice from "@/components/saved/SavedNotice";
 
 export const metadata: Metadata = {
   title: { default: "오르리 | 오늘 어디서 오를까?", template: "%s | 오르리" },
@@ -29,13 +31,16 @@ export default async function RootLayout({
     <html lang="ko" className={pretendard.variable}>
       <body className="flex flex-col min-h-screen bg-white font-pretendard antialiased text-gray-900">
         <ComparisonProvider candidates={candidates}>
+        <SavedProvider ids={candidates.map(({ id }) => id)}>
         <a href="#main-content" className="sr-only focus:not-sr-only focus:fixed focus:top-2 focus:left-2 focus:z-[100] focus:bg-white focus:p-3">본문 바로가기</a>
         <Navbar />
-        <p className="bg-main-light px-6 py-2 text-center text-xs text-main-dark">체험용 서비스 · 암장 정보·사진·평점·저장 수는 예시 데이터입니다.</p>
+        <p className="bg-main-light px-6 py-2 text-center text-xs text-main-dark">포트폴리오 데모 · 암장 정보와 사진은 예시입니다. 로그인 없이 검색·비교·기기 저장을 체험하세요.</p>
+        <SavedNotice />
         {/* 페이지별 본문 콘텐츠 */}
         <main id="main-content" tabIndex={-1} className="flex-grow">{children}</main>
         <Footer />
         <Suspense fallback={null}><ComparisonTray /></Suspense>
+        </SavedProvider>
         </ComparisonProvider>
       </body>
     </html>

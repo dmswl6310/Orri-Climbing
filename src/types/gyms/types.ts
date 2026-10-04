@@ -1,4 +1,5 @@
 export type SearchGymSummary = Pick<GymDetail, "id" | "name" | "district" | "address">;
+export type GymCardData = Pick<GymDetail, "id" | "name" | "thumbnail" | "district" | "tags" | "facilities" | "prices" | "amenities" | "beginnerLesson" | "isDemo">;
 
 export interface GymPrice {
   kind?: "day-pass" | "other";

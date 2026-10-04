@@ -36,7 +36,7 @@ test("invalid coordinates and repeated keywords are handled without an error pag
   await page.goto("/search?q=강남&q=서초&lat=91&lon=127&sort=distance");
   await expect(page.getByRole("heading", { name: "전체 암장" })).toBeVisible();
   await expect(page.getByText(/위치 정보가 올바르지 않아/)).toBeVisible();
-  await expect(page.getByRole("button", { name: "🔥 인기순" })).toHaveAttribute("aria-pressed", "true");
+  await expect(page.getByRole("button", { name: "기본순" })).toHaveAttribute("aria-pressed", "true");
   await page.goto("/gyms/missing");
   await expect(page.getByRole("heading", { name: "페이지를 찾을 수 없어요" })).toBeVisible();
 });
@@ -68,7 +68,7 @@ test("a late GPS response cannot overwrite a newer sort", async ({ page }) => {
   });
   await page.goto("/search?q=강남");
   await page.getByRole("button", { name: "내 위치로 검색", exact: true }).click();
-  await page.getByRole("button", { name: "🔥 인기순" }).click();
+  await page.getByRole("button", { name: "기본순" }).click();
   await expect(page).toHaveURL(/sort=popular/);
   await page.evaluate(() => window.dispatchEvent(new Event("resolve-test-location")));
   await page.waitForLoadState("networkidle");

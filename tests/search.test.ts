@@ -2,6 +2,7 @@ import { describe, expect, it } from "vitest";
 import { getGyms } from "@/services/gymService";
 import { getDistance } from "@/utils.math";
 import { normalizeSearch } from "@/utils/search";
+import { MOCK_GYMS } from "@/constants/gyms";
 
 it("ignores repeated URL parameters and invalid coordinates consistently", () => {
   expect(normalizeSearch({ q: ["강남", "서초"], lat: ["37", "38"], lon: "127", sort: ["popular", "distance"] })).toMatchObject({
@@ -13,9 +14,17 @@ it("ignores repeated URL parameters and invalid coordinates consistently", () =>
 });
 
 describe("search ordering", () => {
-  it("orders the default results by saved count", async () => {
+  it("uses a fixed demo display order", async () => {
     const { gyms } = await getGyms({});
     expect(gyms.slice(0, 3).map((gym) => gym.id)).toEqual(["21", "1", "31"]);
+  });
+  it("does not use fictitious user metrics to rank gyms", async () => {
+    const gym = MOCK_GYMS.find(({ id }) => id === "2")!;
+    const previous = gym.scrapCount;
+    try {
+      gym.scrapCount = 999999999;
+      expect((await getGyms({})).gyms[0].id).toBe("21");
+    } finally { gym.scrapCount = previous; }
   });
 
   it.each([

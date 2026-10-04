@@ -1,6 +1,6 @@
 import { redirect } from "next/navigation";
 
-// Saved gyms will be available after account storage is implemented.
+// Keep the former personal page URL useful without an account.
 export default function SettingsPage() {
-  redirect("/search");
+  redirect("/saved");
 }

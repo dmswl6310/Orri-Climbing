@@ -1,15 +1,16 @@
 import Link from "next/link";
-import type { GymDetail } from "@/types/gyms/types";
+import type { GymCardData } from "@/types/gyms/types";
 import GymImage from "@/components/common/GymImage";
 import { availabilityLabel, getDailyPrice, getFacilityStatus } from "@/utils/gymFacts";
 import { FACILITY_KEYS, FACILITY_LABELS } from "@/utils/search";
 import CompareButton from "@/components/comparison/CompareButton";
+import SaveButton from "@/components/saved/SaveButton";
 
-type GymCardProps = Pick<GymDetail, "id" | "name" | "thumbnail" | "district" | "scrapCount" | "rating" | "tags" | "facilities" | "prices" | "amenities" | "beginnerLesson" | "isDemo"> & {
+type GymCardProps = GymCardData & {
   distanceKm?: number;
 };
 
-export default function GymCard({ id, name, thumbnail, district, scrapCount = 0, rating = 0, tags = [], distanceKm, ...facts }: GymCardProps) {
+export default function GymCard({ id, name, thumbnail, district, tags = [], distanceKm, ...facts }: GymCardProps) {
   const price = getDailyPrice(facts);
   return (
       <article className="group h-full bg-white rounded-2xl overflow-hidden border border-gray-200 hover:border-main-dark transition-all flex flex-col hover:shadow-lg">
@@ -31,13 +32,9 @@ export default function GymCard({ id, name, thumbnail, district, scrapCount = 0,
           <p className="text-xs text-gray-600">{FACILITY_KEYS.filter((key) => getFacilityStatus(facts, key) === true).map((key) => FACILITY_LABELS[key]).join(" · ") || "편의 시설 정보 없음"}</p>
           {distanceKm !== undefined && Number.isFinite(distanceKm) &&
             <p className="text-sm font-semibold text-main-dark">직선거리 {distanceKm < 1 ? `${Math.round(distanceKm * 1000)}m` : `${distanceKm.toFixed(1)}km`}</p>}
-          <div className="mt-auto border-t border-gray-100 pt-3 flex flex-wrap justify-between gap-2 text-xs text-gray-600">
-            <span>누적 저장 {scrapCount.toLocaleString("ko-KR")}회</span>
-            <span aria-label={`평점 ${rating.toFixed(1)}점`}>★ {rating.toFixed(1)}</span>
-          </div>
         </div>
         </Link>
-        <div className="px-4 pb-4"><CompareButton id={id} name={name} /></div>
+        <div className="px-4 pb-4 space-y-2"><SaveButton id={id} name={name} /><CompareButton id={id} name={name} /></div>
       </article>
   );
 }

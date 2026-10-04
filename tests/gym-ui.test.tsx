@@ -5,11 +5,12 @@ import GymHero from "@/components/gym/GymHero";
 import GymInfo from "@/components/gym/GymInfo";
 import { MOCK_GYMS } from "@/constants/gyms";
 import ComparisonProvider from "@/components/comparison/ComparisonProvider";
+import SavedProvider from "@/components/saved/SavedProvider";
 
 describe("gym images", () => {
   it("replaces a failed card image and retries when the source changes", () => {
     const gym = MOCK_GYMS[0];
-    const { rerender } = render(<GymCard {...gym} />, { wrapper: ({ children }) => <ComparisonProvider candidates={MOCK_GYMS}>{children}</ComparisonProvider> });
+    const { rerender } = render(<GymCard {...gym} />, { wrapper: ({ children }) => <ComparisonProvider candidates={MOCK_GYMS}><SavedProvider ids={MOCK_GYMS.map(({ id }) => id)}>{children}</SavedProvider></ComparisonProvider> });
     fireEvent.error(screen.getByRole("img", { name: gym.name }));
     expect(screen.queryByRole("img", { name: gym.name })).not.toBeInTheDocument();
     expect(screen.getByText("이미지 준비 중")).toBeInTheDocument();
