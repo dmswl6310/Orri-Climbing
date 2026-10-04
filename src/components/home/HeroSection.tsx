@@ -1,4 +1,5 @@
 import MountainIcon from "../icons/MountainIcon";
+import Link from "next/link";
 
 const HeroSection = () => (
   <section className="relative bg-gradient-to-br from-main-light/40 to-white pt-16 pb-16 md:pt-20 md:pb-24 px-6 md:px-16 rounded-b-[40px] md:rounded-b-[80px] overflow-hidden">
@@ -19,8 +20,9 @@ const HeroSection = () => (
           찾아보세요
         </p>
       </div>
+      <p className="mt-6 text-sm text-gray-600">로그인 없이 검색하고, 비교하고, 이 기기에 저장해보세요.</p>
+      <Link href="/search?q=데모" className="mt-3 inline-block text-sm font-bold text-main-dark underline underline-offset-4">가상 암장 3개로 가격·시설 필터 체험하기 →</Link>
     </div>
-    <div className="absolute bottom-4 right-8 md:right-28 w-36 md:w-64 lg:w-80 h-36 md:h-64 lg:h-80 bg-[url('/climbing-img.png')] bg-contain bg-right-bottom bg-no-repeat opacity-30 hidden sm:block pointer-events-none" />
   </section>
 );
 

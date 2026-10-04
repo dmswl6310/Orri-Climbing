@@ -1,112 +1,59 @@
 import { MOCK_GYMS } from "@/constants/gyms";
-import { GymDetail } from "@/types/gyms/types";
+import type { GymCardData, GymDetail, SearchGymSummary } from "@/types/gyms/types";
 import { getDistance } from "@/utils.math";
-import { unstable_cache } from "next/cache";
+import { FACILITY_KEYS, normalizeSearch, type SearchParams } from "@/utils/search";
+import { getDailyPrice, getFacilityStatus } from "@/utils/gymFacts";
 
-export interface SearchGymSummary {
-  id: string;
-  name: string;
-  district: string;
-  address: string;
-}
-
+export type GymSearchResult = GymDetail & { distanceKm?: number };
 export interface GetGymsResponse {
-  gyms: GymDetail[];
+  gyms: GymSearchResult[];
+  recommendations: GymSearchResult[];
   isFallback: boolean;
 }
-
-export async function getPopularGyms(limit: number = 3) {
-  // 실제 DB 연동 시
-  // const { data } = await supabase.from('gyms').select('*').order('scrap_count', { ascending: false }).limit(3);
-  // return data;
-
-  // 현재는 목업 데이터
-  return [...MOCK_GYMS]
-    .sort((a, b) => b.scrapCount - a.scrapCount)
-    .slice(0, limit);
+// Explicit demo display order, independent of fictitious rating/save counts.
+const FEATURED_IDS = ["21", "1", "31"];
+const DISPLAY_IDS = [...FEATURED_IDS, ...MOCK_GYMS.map(({ id }) => id).filter((id) => !FEATURED_IDS.includes(id))];
+const DISPLAY_RANK = new Map(DISPLAY_IDS.map((id, index) => [id, index]));
+const byDisplayOrder = (a: GymDetail, b: GymDetail) => (DISPLAY_RANK.get(a.id) ?? Infinity) - (DISPLAY_RANK.get(b.id) ?? Infinity);
+export async function getFeaturedGyms(limit = 3) {
+  return [...MOCK_GYMS].sort(byDisplayOrder).slice(0, limit);
 }
-
 export async function getGymById(id: string) {
-  return MOCK_GYMS.find((g) => g.id === id) || null;
+  return MOCK_GYMS.find((gym) => gym.id === id) ?? null;
 }
-
-// 메인 페이지와 검색페이지에서의 중복호출(서버에서 호출)
-const PRE_POOL: SearchGymSummary[] = MOCK_GYMS.map((gym) => ({
-  id: gym.id,
-  name: gym.name,
-  district: gym.district,
-  address: gym.address,
+const SEARCH_POOL: SearchGymSummary[] = MOCK_GYMS.map(({ id, name, district, address }) => ({
+  id, name, district, address,
 }));
-
 export async function getSearchGymPool(): Promise<SearchGymSummary[]> {
-  return PRE_POOL;
+  return SEARCH_POOL;
+}
+export async function getGymCardCatalog(): Promise<GymCardData[]> {
+  return MOCK_GYMS.map(({ id, name, thumbnail, district, tags, facilities, prices, amenities, beginnerLesson, isDemo }) =>
+    ({ id, name, thumbnail, district, tags, facilities, prices, amenities, beginnerLesson, isDemo }));
 }
 
-// db를 쓴다면
-// export const getSearchGymPool = unstable_cache(
-//   async () => {
-//     const { data } = await supabase
-//       .from("gyms")
-//       .select("id, name, district, address");
-//     return data;
-//   },
-//   ["search-gym-pool"], // 캐시 키
-//   {
-//     revalidate: 86400, // 24시간 마다 한번식 가져오기
-//     tags: ["search-gym-pool"], // revalidateTag하면 24시간 기준 상관없이 업데이트함)
-//   },
-// );
+export function filterGyms(gyms: GymDetail[], params: SearchParams) {
+  const { q, filters } = normalizeSearch(params);
+  const keyword = q.toLowerCase();
+  return gyms.filter((gym) => {
+    if (![gym.name, gym.district, gym.address].some((text) => text.toLowerCase().includes(keyword))) return false;
+    const price = getDailyPrice(gym);
+    if (filters.maxPrice !== undefined && (price === undefined || price > filters.maxPrice)) return false;
+    if (filters.beginner && gym.beginnerLesson !== true) return false;
+    return FACILITY_KEYS.every((key) => !filters[key] || getFacilityStatus(gym, key) === true);
+  });
+}
 
-export async function getGyms({
-  q,
-  lat,
-  lon,
-  sort,
-}: {
-  q?: string;
-  lat?: string;
-  lon?: string;
-  sort?: string;
-}): Promise<GetGymsResponse> {
-  let results = [...MOCK_GYMS];
-  let isFallback = false;
-
-  // 1단계 : 키워드로 필터링(q 있을 때만)
-  if (q) {
-    const keyword = q.toLowerCase().trim();
-    results = results.filter(
-      (gym) =>
-        gym.name.toLowerCase().includes(keyword) ||
-        gym.district.includes(keyword) ||
-        gym.address.includes(keyword),
-    );
-  }
-
-  // 정렬 기준 정하기
-  const currentSort = sort || (lat && lon ? "distance" : "popular");
-
-  // 2단계 : 정렬 실행
-  if (currentSort === "distance" && lat && lon) {
-    const userLat = Number(lat);
-    const userLon = Number(lon);
-    results.sort(
-      (a, b) =>
-        getDistance(userLat, userLon, a.lat, a.lon) -
-        getDistance(userLat, userLon, b.lat, b.lon),
-    );
-  } else if (sort === "popular") {
-    results.sort((a, b) => b.scrapCount - a.scrapCount);
-  }
-  // currentSort==="newest"라면 기본 배열 유지
-
-  // 3단계 : 검색 결과가 0개면 fallback 처리
-  if (results.length === 0) {
-    isFallback = true;
-    results = await getPopularGyms(6);
-  }
-
-  return {
-    gyms: results,
-    isFallback: isFallback,
-  };
+export async function getGyms(params: SearchParams): Promise<GetGymsResponse> {
+  const { coordinates, sort } = normalizeSearch(params);
+  const withDistance = (gym: GymDetail): GymSearchResult => ({
+    ...gym,
+    ...(coordinates ? { distanceKm: getDistance(coordinates.lat, coordinates.lon, gym.lat, gym.lon) } : {}),
+  });
+  const gyms = filterGyms(MOCK_GYMS, params).map(withDistance);
+  gyms.sort((a, b) => sort === "distance"
+    ? (a.distanceKm ?? Infinity) - (b.distanceKm ?? Infinity) || byDisplayOrder(a, b)
+    : byDisplayOrder(a, b));
+  const recommendations = gyms.length ? [] : (await getFeaturedGyms(6)).map(withDistance);
+  return { gyms, recommendations, isFallback: gyms.length === 0 };
 }

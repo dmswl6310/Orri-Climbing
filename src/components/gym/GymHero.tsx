@@ -1,4 +1,4 @@
-import Image from "next/image";
+import GymImage from "@/components/common/GymImage";
 
 interface GymHeroProps {
   name: string;
@@ -10,10 +10,12 @@ const GymHero = ({ name, address, thumbnail }: GymHeroProps) => (
   <section className="relative h-[300px] md:h-[450px] bg-gray-900 overflow-hidden">
     {/* 1. 배경 이미지: thumbnail이 있으면 보여주고, 없으면 기본색 노출 */}
     {thumbnail ? (
-      <Image
+      <GymImage
         src={thumbnail}
         alt={name}
-        fill
+        sizes="100vw"
+        priority
+        dark
         className="w-full h-full object-cover opacity-80" // 텍스트 가독성을 위해 살짝 어둡게
       />
     ) : (

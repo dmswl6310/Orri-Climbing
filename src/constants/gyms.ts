@@ -1,6 +1,7 @@
+import { DEMO_GYMS } from "./demoGyms";
 import { GymDetail } from "@/types/gyms/types";
 
-export const MOCK_GYMS: GymDetail[] = [
+const BASE_GYMS: GymDetail[] = [
   {
     id: "1",
     name: "더클라임 클라이밍 짐앤샵 강남점",
@@ -1057,3 +1058,5 @@ export const MOCK_GYMS: GymDetail[] = [
     difficultySystem: { type: "color", levels: [] },
   },
 ];
+
+export const MOCK_GYMS: GymDetail[] = [...BASE_GYMS, ...DEMO_GYMS];

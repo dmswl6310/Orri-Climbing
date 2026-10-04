@@ -1,41 +1,92 @@
 import { useRouter } from "next/navigation";
-import { useState } from "react";
+import { useEffect, useRef, useState, useTransition } from "react";
+import { buildSearchHref, validCoordinates, type SearchParams } from "@/utils/search";
 
-export function useLocationSearch() {
+// Browser geolocation has no abort API. Invalidate callbacks whenever a newer
+// search/sort supersedes the request, including requests from another control.
+let cancelActiveRequest: (() => void) | undefined;
+export function cancelLocationSearch() {
+  cancelActiveRequest?.();
+}
+
+export function useLocationSearch(query = "", searchContext: SearchParams = {}) {
   const router = useRouter();
-  const [isLoading, setIsLoading] = useState(false);
-  const [userLocation, setUserLocation] = useState("내 위치로 검색");
+  const [locating, setLocating] = useState(false);
+  const [isPending, startTransition] = useTransition();
+  const [error, setError] = useState("");
+  const cancelOwnRequest = useRef<(() => void) | undefined>(undefined);
+  const contextKey = buildSearchHref(searchContext, { q: query });
 
-  // gps 검색
+  useEffect(() => {
+    const handleBack = () => cancelOwnRequest.current?.();
+    const handleLinkNavigation = (event: MouseEvent) => {
+      if (event.button !== 0 || event.metaKey || event.ctrlKey || event.shiftKey || event.altKey) return;
+      const link = event.target instanceof Element ? event.target.closest<HTMLAnchorElement>("a[href]") : null;
+      if (link && link.origin === window.location.origin && (!link.target || link.target === "_self") && !link.hasAttribute("download")) {
+        cancelOwnRequest.current?.();
+      }
+    };
+    window.addEventListener("popstate", handleBack);
+    document.addEventListener("click", handleLinkNavigation, true);
+    return () => {
+      cancelOwnRequest.current?.();
+      window.removeEventListener("popstate", handleBack);
+      document.removeEventListener("click", handleLinkNavigation, true);
+    };
+  }, [contextKey]);
+
   const handleLocationSearch = () => {
-    if (isLoading) return;
-    if (!navigator.geolocation)
-      return alert("GPS를 지원하지 않는 브라우저입니다."); // http일때 사용불가함
-
-    setIsLoading(true);
-    setUserLocation("위치 파악 중...");
-
-    navigator.geolocation.getCurrentPosition(
-      (pos) => {
-        const { latitude, longitude } = pos.coords;
-        setUserLocation("주변 암장 찾는 중...");
-
-        router.push(`/search?lat=${latitude}&lon=${longitude}`);
-        setIsLoading(false);
-      },
-      (err) => {
-        console.error("GPS Error: ", err);
-        alert("위치 정보를 가져오는데 실패했습니다. GPS 권한을 확인해주세요.");
-        setIsLoading(false);
-        setUserLocation("내 위치로 검색");
-      },
-      {
-        enableHighAccuracy: true, // 주변 wifi신호나 gps장치를 모두 모아서 정확성 개선
-        timeout: 5000, // 5초이내 미응답시 에러발생
-        maximumAge: 0, // 항상 새로운 위치 요청(캐시 미사용)
-      },
-    );
+    if (cancelOwnRequest.current || isPending) return;
+    cancelLocationSearch();
+    setError("");
+    if (!navigator.geolocation) {
+      setError("위치 검색을 지원하지 않는 브라우저입니다. 지역명으로 검색해주세요.");
+      return;
+    }
+    let active = true;
+    const finish = () => {
+      active = false;
+      cancelOwnRequest.current = undefined;
+      if (cancelActiveRequest === finish) cancelActiveRequest = undefined;
+      setLocating(false);
+    };
+    cancelOwnRequest.current = finish;
+    cancelActiveRequest = finish;
+    setLocating(true);
+    try {
+      navigator.geolocation.getCurrentPosition(
+        (position) => {
+          if (!active) return;
+          finish();
+          const { latitude, longitude } = position.coords;
+          if (!validCoordinates(latitude, longitude)) {
+            setError("올바른 위치를 받지 못했습니다. 다시 시도하거나 지역명으로 검색해주세요.");
+            return;
+          }
+          const href = buildSearchHref(searchContext, { q: query, lat: String(latitude), lon: String(longitude), sort: "distance" });
+          startTransition(() => router.push(href));
+        },
+        (failure) => {
+          if (!active) return;
+          finish();
+          setError(failure.code === 1
+            ? "위치 권한이 거부되었습니다. 브라우저에서 권한을 허용하거나 지역명으로 검색해주세요."
+            : failure.code === 3
+              ? "위치 확인 시간이 초과되었습니다. 다시 시도하거나 지역명으로 검색해주세요."
+              : "위치를 확인할 수 없습니다. 다시 시도하거나 지역명으로 검색해주세요.");
+        },
+        { enableHighAccuracy: true, timeout: 5000, maximumAge: 60000 },
+      );
+    } catch {
+      if (!active) return;
+      finish();
+      setError("위치를 요청할 수 없습니다. 지역명으로 검색해주세요.");
+    }
   };
 
-  return { isLoading, userLocation, handleLocationSearch };
+  return {
+    isLoading: locating || isPending,
+    userLocation: locating ? "위치 파악 중..." : isPending ? "주변 암장 찾는 중..." : "내 위치로 검색",
+    error, handleLocationSearch,
+  };
 }

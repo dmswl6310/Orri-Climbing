@@ -7,7 +7,7 @@
   --color-point: #ffd166;
   --color-purple-light: #d3b3e1;
 
-  --font-pretendard: var(--font-pretendard);
+  --font-pretendard: var(--font-pretendard-local);
 }
 /*
 사용시 이름뒤에 바로 붙여서 사용 하면됨
@@ -18,8 +18,17 @@
 */
 
 body {
-  font-family: var(--font-pretendard), sans-serif;
+  font-family: var(--font-pretendard-local), sans-serif;
   background-color: #ffffff;
   /* 전체적으로 선명하고 얇은 느낌을 위해 폰트 두께 미세 조정 */
   letter-spacing: -0.02em;
+}
+
+:where(a, button, input, select, textarea, [tabindex]):focus-visible {
+  outline: 2px solid #3a5e9a;
+  outline-offset: 4px;
+}
+
+html:has([aria-label="비교 후보"]) {
+  scroll-padding-bottom: 45dvh;
 }

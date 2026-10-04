@@ -1,3 +1,6 @@
+import { redirect } from "next/navigation";
+
+// Keep the former personal page URL useful without an account.
 export default function SettingsPage() {
-  return <div>마이페이지</div>;
+  redirect("/saved");
 }

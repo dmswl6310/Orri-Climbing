@@ -9,10 +9,10 @@ export default async function HomePage() {
   const gymSearchPool = await getSearchGymPool();
 
   return (
-    <main className="flex-1 overflow-x-hidden">
+    <div className="flex-1">
       <HeroSection />
       <SearchBar gymSearchPool={gymSearchPool} variant="main" />
       <PopularGyms />
-    </main>
+    </div>
   );
 }
